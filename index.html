@@ -104,6 +104,35 @@
 </body>
 
 <script>
+    function generateCSV(object) {
+        var csv = ""
+        var names = Object.keys(object)
+        for (var i = 0; i < names.length; i++) {
+            csv = csv + names[i] + "\n";
+            csv = csv + "\"x\", \"y\", \"success\"\n"
+            for (var c = 1; c < object[names[i]].length + 1; c++) {
+                csv = csv + c.toString() + ",\"" + object[names[i]][c - 1].join("\",\"") + "\"\n"
+            }
+            csv = csv + "\n"
+        }
+        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+
+        var link = document.createElement("a");
+        if (link.download !== undefined) { // feature detection
+            // Browsers that support HTML5 download attribute
+            var url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", "test_data.csv");
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+
+        console.log(csv)
+    }
+
     $(document).ready(function() {
 
         function fillTable(data) {
