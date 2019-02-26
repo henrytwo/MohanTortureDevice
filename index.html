@@ -190,29 +190,55 @@
         }
 
         function kms(xmin, xmax, ymin, ymax, numpoints) {
-            console.log(ymax)
             xmin = Math.ceil(xmin / 5);
             xmax = Math.floor(xmax / 5);
             ymin = Math.ceil(ymin / 5);
             ymax = Math.floor(ymax / 5);
 
-
-
-            var points = []
-            for (var i = 0; i < numpoints-1; i++) {
-                points.push([random(xmin, xmax) * 5, random(ymin, ymax) * 5, false])
-            }
+            var points = [];
+            var ypoints = [];
+            var yp = random(ymin, ymax) * 5;
+            var xpoints = [];
+            var xp = random(xmin, xmax) * 5;
 
             var w = random(0, 3)
 
             if (w === 0) {
-                points.push([xmin * 5, random(ymin + 1, ymax - 1) * 5, false])
+                points.push([xmin * 5, yp])
+                xpoints.push(xmin * 5)
+                ypoints.push(yp)
             } else if (w === 1) {
-                points.push([xmax * 5, random(ymin + 1, ymax - 1) * 5, false])
+                points.push([xmax * 5, yp, false])
+                xpoints.push(xmax * 5)
+                ypoints.push(yp)
             } else if (w === 2) {
-                points.push([random(xmin + 1, xmax - 1) * 5, ymin * 5, false])
+                points.push([xp, ymin * 5, false])
+                xpoints.push(xp)
+                ypoints.push(ymin * 5)
             } else {
-                points.push([random(xmin + 1, xmax - 1) * 5, ymax * 5, false])
+                points.push([xp, ymax * 5, false])
+                xpoints.push(xp)
+                ypoints.push(ymax * 5)
+            }
+
+            for (var i = 0; i < numpoints-1; i++) {
+                for (var j = 0; j < 100; j++) {
+                    yp = random(ymin+1, ymax-1) * 5
+                    if (ypoints.indexOf(yp) === -1) {
+                        ypoints.push(yp)
+                        break
+                    }
+                }
+
+                for (var j = 0; j < 100; j++) {
+                    xp = random(xmin+1, xmax-1) * 5
+                    if (xpoints.indexOf(xp) === -1) {
+                        xpoints.push(xp)
+                        break
+                    }
+                }
+
+                points.push([xp, yp, false])
             }
 
             return points;
