@@ -35,6 +35,16 @@
 
     <div style="padding: 20px">
 
+
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default">Group Name</span>
+            </div>
+            <input id="name" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+        </div>
+
+        <hr>
+
         <div class="input-group mb-3">
             <div class="input-group-prepend">
                 <span class="input-group-text" id="inputGroup-sizing-default">X-Range Min</span>
@@ -79,18 +89,23 @@
 
         <button id="generate" type="button" class="btn btn-success" style="width: 100%">Generate</button>
 
-        <!--
-        <button id="save" type="button" class="btn btn-primary" style="width: 100%; margin-top: 5px">Save Settings</button>
-        -->
+        <button id="export" type="button" class="btn btn-primary" style="width: 100%; margin-top: 5px">Export</button>
+
+
 
         <div id="output" hidden>
             <hr>
+
+
+            <h4 id="group-name">Group Name:</h4>
+
             <table class="table">
                 <thead>
                 <tr>
                     <th scope="col">#</th>
                     <th scope="col">X</th>
                     <th scope="col">Y</th>
+                    <th scope="col">PASSED</th>
                 </tr>
                 </thead>
                 <tbody id="table-contents">
@@ -110,13 +125,14 @@
             var buffer = '';
 
             var template = '   <tr>\n' +
-                '                    <th scope="row">{{num}}</th>\n' +
-                '                    <td>{{XPOINT}}</td>\n' +
-                '                    <td>{{YPOINT}}</td>\n' +
-                '                </tr>'
+            '                    <th scope="row">{{num}}</th>\n' +
+            '                    <td>{{XPOINT}}</td>\n' +
+            '                    <td>{{YPOINT}}</td>\n' +
+            '                    <td><input type="checkbox" class="form-check-input" id="{{num}}-check"></td>\n' +
+            '                </tr>'
 
             for (var i = 0; i < data.length; i++) {
-                buffer += template.replace('{{num}}', i + 1).replace('{{XPOINT}}', data[i][0]).replace('{{YPOINT}}', data[i][1])
+                buffer += template.replace('{{num}}', i + 1).replace('{{num}}', i + 1).replace('{{XPOINT}}', data[i][0]).replace('{{YPOINT}}', data[i][1])
             }
 
 
@@ -137,19 +153,19 @@
 
             var points = []
             for (var i = 0; i < numpoints-1; i++) {
-                points.push([random(xmin, xmax) * 5, random(ymin, ymax) * 5])
+                points.push([random(xmin, xmax) * 5, random(ymin, ymax) * 5, false])
             }
 
             var w = random(0, 3)
 
             if (w === 0) {
-                points.push([xmin * 5, random(ymin + 1, ymax - 1) * 5])
+                points.push([xmin * 5, random(ymin + 1, ymax - 1) * 5, false])
             } else if (w === 1) {
-                points.push([xmax * 5, random(ymin + 1, ymax - 1) * 5])
+                points.push([xmax * 5, random(ymin + 1, ymax - 1) * 5, false])
             } else if (w === 2) {
-                points.push([random(xmin + 1, xmax - 1) * 5, ymin * 5])
+                points.push([random(xmin + 1, xmax - 1) * 5, ymin * 5, false])
             } else {
-                points.push([random(xmin + 1, xmax - 1) * 5, ymax * 5])
+                points.push([random(xmin + 1, xmax - 1) * 5, ymax * 5, false])
             }
 
             return points;
@@ -165,8 +181,27 @@
             })
                 .then((generate) => {
                     if (generate) {
-                        if (parseInt($('#xMin').val()) <= parseInt($('#xMax').val()) && parseInt($('#xMin').val()) <= parseInt($('#xMax').val()) && parseInt($('#numPoints').val()) >= 1) {
-                            fillTable(kms(parseInt($('#xMin').val()), parseInt($('#xMax').val()), parseInt($('#yMin').val()), parseInt($('#yMax').val()), parseInt($('#numPoints').val())));
+
+                        var groupName = $('#name').val();
+
+                        if ($('#name').val() && parseInt($('#xMin').val()) <= parseInt($('#xMax').val()) && parseInt($('#xMin').val()) <= parseInt($('#xMax').val()) && parseInt($('#numPoints').val()) >= 1) {
+                            var data = kms(parseInt($('#xMin').val()), parseInt($('#xMax').val()), parseInt($('#yMin').val()), parseInt($('#yMax').val()), parseInt($('#numPoints').val()));
+
+                            fillTable(data);
+
+                            $('#group-name').html('Group Name: ' + $('#name').val());
+
+                            $('#name').val('');
+
+                            try {
+                                var localJson = JSON.parse(window.localStorage.data);
+                            } catch (e) {
+                                var localJson = {};
+                            }
+
+                            localJson[groupName] = data;
+
+                            window.localStorage.data = JSON.stringify(localJson);
 
                             swal("New points have been generated!", {
                                 icon: "success",
