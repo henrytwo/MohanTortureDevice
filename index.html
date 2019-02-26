@@ -7,6 +7,7 @@
 
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <script src="jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"></script>
 
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -28,43 +29,151 @@
 
 </head>
 <body style="padding: 0; margin: 0;">
-<nav class="navbar navbar-dark bg-dark">
-    <a class="navbar-brand" href="#">Mohan Torture Device</a>
+    <nav class="navbar navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Mohan Torture Device</a>
+    </nav>
 
-</nav>
+    <div style="padding: 20px">
 
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default">X-Range Min</span>
+            </div>
+            <input id="xMin" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+        </div>
+
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default">X-Range Max</span>
+            </div>
+            <input id="xMax" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+        </div>
+
+        <hr>
+
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default">Y-Range Max</span>
+            </div>
+            <input id="yMin" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+        </div>
+
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default">Y-Range Max</span>
+            </div>
+            <input id="yMax" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+        </div>
+
+        <hr>
+
+        <div class="input-group mb-3">
+            <div class="input-group-prepend">
+                <span class="input-group-text" id="inputGroup-sizing-default"># Points</span>
+            </div>
+            <input id="numPoints" type="text" class="form-control" aria-label="Default" aria-describedby="inputGroup-sizing-default">
+        </div>
+
+        <hr>
+
+
+        <button id="generate" type="button" class="btn btn-success" style="width: 100%">Generate</button>
+
+        <button id="save" type="button" class="btn btn-primary" style="width: 100%; margin-top: 5px">Save Settings</button>
+
+        <div id="output" hidden>
+            <hr>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">X</th>
+                    <th scope="col">Y</th>
+                </tr>
+                </thead>
+                <tbody id="table-contents">
+                </tbody>
+            </table>
+        </div>
+
+    </div>
 
 
 </body>
 
 <script>
-function random(min, max){
-    return (Math.round(Math.random() * (max-min) + min))
-}
-function kms(xmin, xmax, ymin, ymax, numpoints) {
-    xmin = Math.round(xmin / 5);
-    xmax = Math.round(xmax / 5);
-    ymin = Math.round(ymin / 5);
-    ymax = Math.round(ymax / 5);
+    $(document).ready(function() {
+
+        function fillTable(data) {
+            var buffer = '';
+
+            var template = '   <tr>\n' +
+                '                    <th scope="row">{{num}}</th>\n' +
+                '                    <td>{{XPOINT}}</td>\n' +
+                '                    <td>{{YPOINT}}</td>\n' +
+                '                </tr>'
+
+            for (var i = 0; i < data.length; i++) {
+                buffer += template.replace('{{num}}', i + 1).replace('{{XPOINT}}', data[i][0]).replace('{{YPOINT}}', data[i][1])
+            }
 
 
-    var points = []
-    for (var i = 0; i < numpoints-1; i++) {
-        points.push([random(xmin+1, xmax-1) * 5, random(ymin+1, ymax-1) * 5])
-    }
+            $('#output').attr('hidden', false);
+            $('#table-contents').html(buffer);
+        }
+        function random(min, max){
+            return (Math.round(Math.random() * (max-min) + min))
+        }
+        function kms(xmin, xmax, ymin, ymax, numpoints) {
 
-    var w = random(0, 3)
+            xmin = Math.round(xmin / 5);
+            xmax = Math.round(xmax / 5);
+            ymin = Math.round(ymin / 5);
+            ymax = Math.round(ymax / 5);
 
-    if (w === 0) {
-        points.push([xmin * 5, random(ymin + 1, ymax - 1) * 5])
-    } else if (w === 1) {
-        points.push([xmax * 5, random(ymin + 1, ymax - 1) * 5])
-    } else if (w === 2) {
-        points.push([random(xmin + 1, xmax - 1) * 5, ymin * 5])
-    } else {
-        points.push([random(xmin + 1, xmax - 1) * 5, ymax * 5])
-    }
-}
 
+            var points = []
+            for (var i = 0; i < numpoints-1; i++) {
+                points.push([random(xmin, xmax) * 5, random(ymin, ymax) * 5])
+            }
+
+            var w = random(0, 3)
+
+            if (w === 0) {
+                points.push([xmin * 5, random(ymin + 1, ymax - 1) * 5])
+            } else if (w === 1) {
+                points.push([xmax * 5, random(ymin + 1, ymax - 1) * 5])
+            } else if (w === 2) {
+                points.push([random(xmin + 1, xmax - 1) * 5, ymin * 5])
+            } else {
+                points.push([random(xmin + 1, xmax - 1) * 5, ymax * 5])
+            }
+
+            return points;
+        }
+
+        $('#generate').on('click', function() {
+            swal({
+                title: "Are you sure?",
+                text: "Your previous values will be deleted",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+                .then((generate) => {
+                    if (generate) {
+
+                        fillTable(kms(parseInt($('#xMin').val()), parseInt($('#xMax').val()), parseInt($('#yMin').val()), parseInt($('#yMax').val()), parseInt($('#numPoints').val())));
+
+                        swal("New points have been generated!", {
+                            icon: "success",
+                        });
+                    } else {
+                        swal("Generation aborted.");
+                    }
+                });
+        });
+
+    })
 </script>
 </html>
