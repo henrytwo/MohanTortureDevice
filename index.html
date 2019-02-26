@@ -38,7 +38,33 @@
 </body>
 
 <script>
+function random(min, max){
+    return (Math.round(Math.random() * (max-min) + min))
+}
+function kms(xmin, xmax, ymin, ymax, numpoints) {
+    xmin = Math.round(xmin / 5);
+    xmax = Math.round(xmax / 5);
+    ymin = Math.round(ymin / 5);
+    ymax = Math.round(ymax / 5);
 
+
+    var points = []
+    for (var i = 0; i < numpoints-1; i++) {
+        points.push([random(xmin+1, xmax-1) * 5, random(ymin+1, ymax-1) * 5])
+    }
+
+    var w = random(0, 3)
+
+    if (w === 0) {
+        points.push([xmin * 5, random(ymin + 1, ymax - 1) * 5])
+    } else if (w === 1) {
+        points.push([xmax * 5, random(ymin + 1, ymax - 1) * 5])
+    } else if (w === 2) {
+        points.push([random(xmin + 1, xmax - 1) * 5, ymin * 5])
+    } else {
+        points.push([random(xmin + 1, xmax - 1) * 5, ymax * 5])
+    }
+}
 
 </script>
 </html>
