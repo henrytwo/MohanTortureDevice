@@ -111,6 +111,10 @@
                 <tbody id="table-contents">
                 </tbody>
             </table>
+
+
+            <button id="save" type="button" class="btn btn-success" style="width: 100%">Save</button>
+
         </div>
 
     </div>
@@ -157,7 +161,7 @@
             '                    <th scope="row">{{num}}</th>\n' +
             '                    <td>{{XPOINT}}</td>\n' +
             '                    <td>{{YPOINT}}</td>\n' +
-            '                    <td><input type="checkbox" class="form-check-input" id="{{num}}-check"></td>\n' +
+            '                    <td><input type="checkbox" class="form-check-input pass-box" id="{{num}}-check"></td>\n' +
             '                </tr>'
 
             for (var i = 0; i < data.length; i++) {
@@ -171,6 +175,20 @@
         function random(min, max){
             return (Math.round(Math.random() * (max-min) + min))
         }
+        function getData() {
+            try {
+                var localJson = JSON.parse(window.localStorage.data);
+            } catch (e) {
+                var localJson = {};
+            }
+
+            return localJson;
+
+        }
+        function saveData(data) {
+            window.localStorage.data = JSON.stringify(data);
+        }
+
         function kms(xmin, xmax, ymin, ymax, numpoints) {
             console.log(ymax)
             xmin = Math.ceil(xmin / 5);
@@ -200,6 +218,22 @@
             return points;
         }
 
+        $('#save').on('click', function() {
+
+            var localData = getData();
+
+            for (var i = 1; i <= window.localStorage.numCases; i++) {
+
+                localData[window.localStorage.groupname][i - 1][2] = $('#' + i + '-check').prop("checked")
+
+            }
+
+            saveData(localData);
+
+            swal('Saved!', 'yay it should be good', 'success')
+        });
+
+
         $('#generate').on('click', function() {
             swal({
                 title: "Are you sure?",
@@ -222,15 +256,14 @@
 
                             $('#name').val('');
 
-                            try {
-                                var localJson = JSON.parse(window.localStorage.data);
-                            } catch (e) {
-                                var localJson = {};
-                            }
+                            window.localStorage.numCases = data.length;
+                            window.localStorage.groupname = groupName;
+
+                            localJson = getData();
 
                             localJson[groupName] = data;
 
-                            window.localStorage.data = JSON.stringify(localJson);
+                            saveData(localJson);
 
                             swal("New points have been generated!", {
                                 icon: "success",
