@@ -127,11 +127,12 @@
             return (Math.round(Math.random() * (max-min) + min))
         }
         function kms(xmin, xmax, ymin, ymax, numpoints) {
-
+            console.log(ymax)
             xmin = Math.ceil(xmin / 5);
             xmax = Math.floor(xmax / 5);
             ymin = Math.ceil(ymin / 5);
             ymax = Math.floor(ymax / 5);
+
 
 
             var points = []
@@ -164,12 +165,17 @@
             })
                 .then((generate) => {
                     if (generate) {
+                        if (parseInt($('#xMin').val()) <= parseInt($('#xMax').val()) && parseInt($('#xMin').val()) <= parseInt($('#xMax').val()) && parseInt($('#numPoints').val()) >= 1) {
+                            fillTable(kms(parseInt($('#xMin').val()), parseInt($('#xMax').val()), parseInt($('#yMin').val()), parseInt($('#yMax').val()), parseInt($('#numPoints').val())));
 
-                        fillTable(kms(parseInt($('#xMin').val()), parseInt($('#xMax').val()), parseInt($('#yMin').val()), parseInt($('#yMax').val()), parseInt($('#numPoints').val())));
-
-                        swal("New points have been generated!", {
-                            icon: "success",
-                        });
+                            swal("New points have been generated!", {
+                                icon: "success",
+                            });
+                        } else {
+                            swal("Error, please check parameters and try again.", {
+                                icon: "error",
+                            })
+                        }
                     } else {
                         swal("Generation aborted.");
                     }
