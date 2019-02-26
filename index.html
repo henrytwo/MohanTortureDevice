@@ -128,10 +128,10 @@
         }
         function kms(xmin, xmax, ymin, ymax, numpoints) {
 
-            xmin = Math.round(xmin / 5);
-            xmax = Math.round(xmax / 5);
-            ymin = Math.round(ymin / 5);
-            ymax = Math.round(ymax / 5);
+            xmin = Math.ceil(xmin / 5);
+            xmax = Math.floor(xmax / 5);
+            ymin = Math.ceil(ymin / 5);
+            ymax = Math.floor(ymax / 5);
 
 
             var points = []
